@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101113">
+  <meta name="description" content="Visit Sahil Arena, a premium gaming destination by Sahil.">
+  <title>Sahil Arena | Sureshot by Sahil</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
+
+    :root {
+      color-scheme: dark;
+      --ink: #ffffff;
+      --muted: rgba(255, 255, 255, .45);
+      --line: rgba(120, 120, 120, .15);
+      --panel: rgba(30, 30, 30, .75);
+      --glow: rgba(107, 114, 128, .35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--ink);
+      background: #0d0d0d;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      font-family: 'Outfit', Inter, sans-serif;
+    }
+
+    body::before {
+      position: fixed;
+      z-index: 0;
+      inset: 0;
+      content: "";
+      pointer-events: none;
+    }
+
+    body::before {
+      background:
+        radial-gradient(circle at 15% 50%, rgba(90, 90, 90, .15), transparent 45%),
+        radial-gradient(circle at 85% 30%, rgba(50, 50, 50, .12), transparent 45%);
+    }
+
+    #web-canvas {
+      position: fixed;
+      z-index: 0;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 420px;
+      margin: 0;
+      padding: 32px 20px 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0 0 20px;
+      padding: 5px 14px;
+      border: 1px solid rgba(150, 150, 150, .25);
+      border-radius: 999px;
+      background: rgba(70, 70, 70, .25);
+      color: #d1d5db;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      animation: fadeSlideDown .6s both;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      animation: blink 1.2s ease-in-out infinite;
+    }
+
+    .brand-mark {
+      position: relative;
+      width: 180px;
+      aspect-ratio: 1;
+      margin: 0 0 8px;
+      display: grid;
+      place-items: center;
+      border: 4px solid rgba(255, 255, 255, .12);
+      border-radius: 50%;
+      background: #000;
+      box-shadow: 0 0 20px rgba(170, 170, 170, .35), 0 0 40px rgba(100, 100, 100, .2);
+      animation: arrive .7s both, bob 4s ease-in-out infinite;
+    }
+
+    .brand-mark::before {
+      display: none;
+    }
+
+    .brand-mark span {
+      position: relative;
+      font-size: 30px;
+      font-weight: 700;
+    }
+
+    .brand {
+      width: 100%;
+      margin-bottom: 36px;
+      text-align: center;
+      animation: fadeSlideUp .8s .2s both;
+    }
+
+    .brand-title {
+      position: relative;
+      left: 50%;
+      width: min(calc(100vw - 24px), 560px);
+      margin: 0 0 8px;
+      transform: translateX(-50%);
+      font-size: clamp(1rem, 3.2vw, 2rem);
+      font-weight: 900;
+      letter-spacing: .02em;
+      line-height: 1.35;
+      white-space: nowrap;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .brand-title-text {
+      display: inline-block;
+      white-space: nowrap;
+      background: linear-gradient(135deg, #fff 0%, #d1d5db 45%, #6b7280 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-tagline {
+      margin: 0;
+      color: rgba(255, 255, 255, .72);
+      font-size: .78rem;
+      font-weight: 500;
+      letter-spacing: .04em;
+    }
+
+    .rule {
+      width: 60px;
+      height: 3px;
+      margin: 0 0 36px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, transparent, #b7b9bf, transparent);
+    }
+
+    .join-link {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 24px;
+      border: 1px solid #52525b;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #3f3f46 0%, #18181b 100%);
+      box-shadow: 0 4px 20px var(--glow), inset 0 1px rgba(255, 255, 255, .15);
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      line-height: 25px;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: transform .18s, box-shadow .18s, filter .18s;
+      position: relative;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .join-link:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 28px rgba(120, 120, 120, .35);
+      filter: brightness(1.1);
+    }
+
+    .join-link:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+
+    .join-link:active { transform: translateY(0) scale(.98); }
+
+    nav[aria-label="Main actions"] {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      animation: fadeSlideUp .9s .4s both;
+    }
+
+    .countdown {
+      width: 100%;
+      margin-top: 18px;
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(45, 45, 45, .75), rgba(25, 25, 25, .9));
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .18), inset 0 1px rgba(255, 255, 255, .08);
+      backdrop-filter: blur(10px);
+      text-align: center;
+      animation: fadeSlideUp 1s .5s both;
+    }
+
+    .countdown-label {
+      display: block;
+      margin: 0 0 8px;
+      color: #9ca3af;
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .countdown-time {
+      display: block;
+      margin: 0;
+      color: #f3f4f6;
+      font-size: 2rem;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: .08em;
+      text-shadow: 0 0 18px rgba(156, 163, 175, .3);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .countdown-note {
+      margin: 8px 0 0;
+      color: rgba(255, 255, 255, .72);
+      font-size: .86rem;
+      line-height: normal;
+      letter-spacing: .03em;
+    }
+
+    .stats {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin: 40px 0 0;
+      animation: fadeSlideUp 1s .6s both;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stat-sep {
+      width: 1px;
+      margin: 4px 0;
+      background: rgba(255, 255, 255, .1);
+    }
+
+    .stat strong {
+      display: block;
+      color: #d1d5db;
+      font-size: 1.4rem;
+      font-weight: 900;
+      line-height: 1.25;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 0;
+      color: var(--muted);
+      font-size: .72rem;
+      font-weight: 500;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    footer {
+      margin-top: 44px;
+      color: var(--muted);
+      font-size: .72rem;
+      letter-spacing: .04em;
+      text-align: center;
+      animation: fadeSlideUp 1s .8s both;
+    }
+
+    footer p { margin: 0; }
+    footer p + p { margin-top: 6px; }
+
+    @keyframes drift { to { background-position: 210px 185px; } }
+    @keyframes blink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .3; transform: scale(.75); } }
+    @keyframes arrive { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 480px) {
+      body { justify-content: flex-start; }
+      .brand-title { width: calc(100vw - 16px); font-size: clamp(1rem, 4.5vw, 1.25rem); letter-spacing: 0; }
+      .brand-mark { width: 150px; }
+      .join-link { padding: 16px 20px; font-size: .95rem; line-height: 22px; }
+      .countdown-time { font-size: 1.7rem; }
+      .stats { gap: 16px; }
+      .stat strong { font-size: 1.2rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="web-canvas" aria-hidden="true"></canvas>
+  <main>
+    <div class="live-pill"><span class="live-dot" aria-hidden="true"></span>Live Now</div>
+    <div class="brand-mark" aria-label="Sahil logo"><span>SAHIL</span></div>
+    <div class="brand">
+      <h1 class="brand-title"><span class="brand-title-text">𝗦𝗨𝗥𝗘𝗦𝗛𝗢𝗧 𝗕𝗬 𝗦𝗔𝗛𝗜𝗟❤️💸</span></h1>
+      <p class="brand-tagline">Your Premium Gaming Destination 🎰</p>
+    </div>
+    <div class="rule" aria-hidden="true"></div>
+    <nav aria-label="Main actions">
+      <a class="join-link" href="https://t.me/+GB2dlbT3Q3dmNmY1" target="_blank" rel="noopener noreferrer">JOIN NOW</a>
+    </nav>
+    <section class="countdown" aria-label="Free join countdown">
+      <p class="countdown-label">Time Left For Free Join</p>
+      <output class="countdown-time" aria-live="off">00:20</output>
+      <p class="countdown-note">Offer starts counting down as soon as you open the page.</p>
+    </section>
+    <section class="stats" aria-label="Platform statistics">
+      <div class="stat"><strong data-count-to="50" data-count-suffix="K+">0K+</strong><span>Members</span></div>
+      <div class="stat-sep" aria-hidden="true"></div>
+      <div class="stat"><strong>24/7</strong><span>Support</span></div>
+      <div class="stat-sep" aria-hidden="true"></div>
+      <div class="stat"><strong data-count-to="100" data-count-suffix="%">0%</strong><span>Secure</span></div>
+    </section>
+    <footer>
+      <p>Sahil Arena</p>
+      <p>Ads managed by Sahil</p>
+    </footer>
+  </main>
+  <script>
+    const timer = document.querySelector('.countdown-time');
+    const note = document.querySelector('.countdown-note');
+    const card = document.querySelector('.countdown');
+    const joinUrl = 'https://t.me/+GB2dlbT3Q3dmNmY1';
+    let secondsLeft = 5;
+
+    const countdownId = window.setInterval(() => {
+      secondsLeft = Math.max(0, secondsLeft - 1);
+      timer.value = `00:${String(secondsLeft).padStart(2, '0')}`;
+      timer.textContent = timer.value;
+      if (secondsLeft === 0) {
+        window.clearInterval(countdownId);
+        note.textContent = 'Redirecting to the join link...';
+        card.classList.add('expired');
+        window.location.href = joinUrl;
+      }
+    }, 1000);
+
+    const statCounters = document.querySelectorAll('[data-count-to]');
+    const counterStartedAt = performance.now();
+
+    function animateStatCounters(time) {
+      const progress = Math.min((time - counterStartedAt) / 2200, 1);
+      for (const counter of statCounters) {
+        const target = Number(counter.dataset.countTo);
+        const value = Math.floor(target * progress);
+        counter.textContent = `${value}${counter.dataset.countSuffix}`;
+      }
+      if (progress < 1) window.requestAnimationFrame(animateStatCounters);
+    }
+
+    window.requestAnimationFrame(animateStatCounters);
+
+    const webCanvas = document.querySelector('#web-canvas');
+    const webContext = webCanvas.getContext('2d');
+    const webPointer = { x: 0, y: 0, targetX: 0, targetY: 0, lastMove: -Infinity, inside: false };
+    let webWidth = 0;
+    let webHeight = 0;
+    let webScale = 1;
+    let webPoints = [];
+    let webFrame = 0;
+
+    function resizeWebCanvas() {
+      webScale = Math.min(window.devicePixelRatio || 1, 2);
+      webWidth = window.innerWidth;
+      webHeight = window.innerHeight;
+      webCanvas.width = Math.round(webWidth * webScale);
+      webCanvas.height = Math.round(webHeight * webScale);
+      webContext.setTransform(webScale, 0, 0, webScale, 0, 0);
+
+      const spacing = 120;
+      const columns = Math.ceil(webWidth / spacing) + 1;
+      const rows = Math.ceil(webHeight / spacing) + 1;
+      webPoints = Array.from({ length: rows }, (_, row) =>
+        Array.from({ length: columns }, (_, column) => ({
+          x: column * spacing + Math.sin(column * 127.1 + row * 311.7) * 20,
+          y: row * spacing + Math.sin(column * 269.5 + row * 183.3) * 20
+        }))
+      );
+      requestWebFrame();
+    }
+
+    function drawBackgroundWeb(intensity, time) {
+      const influenceRadius = 210;
+      const phase = time * .003;
+      const displayPoints = webPoints.map(row => row.map(point => {
+        const dx = point.x - webPointer.x;
+        const dy = point.y - webPointer.y;
+        const distance = Math.hypot(dx, dy);
+        const influence = intensity * Math.max(0, 1 - distance / influenceRadius);
+        const movement = Math.sin(phase - distance * .025) * 3.5 * influence;
+        const direction = distance || 1;
+        return {
+          x: point.x + dx / direction * movement,
+          y: point.y + dy / direction * movement,
+          influence
+        };
+      }));
+
+      webContext.lineWidth = .7;
+      webContext.beginPath();
+      for (let row = 0; row < webPoints.length; row += 1) {
+        for (let column = 0; column < webPoints[row].length; column += 1) {
+          const point = displayPoints[row][column];
+          const neighbors = [
+            displayPoints[row][column + 1],
+            displayPoints[row + 1]?.[column],
+            displayPoints[row + 1]?.[column + 1],
+            displayPoints[row + 1]?.[column - 1]
+          ];
+          for (const neighbor of neighbors) {
+            if (!neighbor) continue;
+            const linkStrength = Math.max(point.influence, neighbor.influence);
+            webContext.strokeStyle = `rgba(210, 216, 224, ${.025 + linkStrength * .14})`;
+            webContext.lineWidth = .55 + linkStrength * .25;
+            webContext.beginPath();
+            webContext.moveTo(point.x, point.y);
+            webContext.lineTo(neighbor.x, neighbor.y);
+            webContext.stroke();
+          }
+        }
+      }
+      for (const row of displayPoints) {
+        for (const point of row) {
+          webContext.beginPath();
+          webContext.arc(point.x, point.y, .8 + point.influence * .7, 0, Math.PI * 2);
+          webContext.fillStyle = `rgba(220, 226, 233, ${.12 + point.influence * .28})`;
+          webContext.fill();
+        }
+      }
+    }
+
+    function drawWeb(time) {
+      webFrame = 0;
+      webContext.clearRect(0, 0, webWidth, webHeight);
+      const intensity = webPointer.inside ? .55 : Math.max(0, .55 * (1 - (time - webPointer.lastMove) / 1400));
+      if (intensity > 0) {
+        webPointer.x += (webPointer.targetX - webPointer.x) * .16;
+        webPointer.y += (webPointer.targetY - webPointer.y) * .16;
+      }
+      drawBackgroundWeb(intensity, time);
+      if (intensity > 0) requestWebFrame();
+    }
+
+    function requestWebFrame() {
+      if (!webFrame) webFrame = window.requestAnimationFrame(drawWeb);
+    }
+
+    window.addEventListener('pointermove', event => {
+      webPointer.inside = true;
+      webPointer.targetX = event.clientX;
+      webPointer.targetY = event.clientY;
+      if (!Number.isFinite(webPointer.lastMove)) {
+        webPointer.x = event.clientX;
+        webPointer.y = event.clientY;
+      }
+      webPointer.lastMove = performance.now();
+      requestWebFrame();
+    }, { passive: true });
+
+    window.addEventListener('pointerleave', () => {
+      webPointer.inside = false;
+      webPointer.lastMove = performance.now();
+      requestWebFrame();
+    }, { passive: true });
+
+    window.addEventListener('resize', resizeWebCanvas);
+    resizeWebCanvas();
+  </script>
+</body>
+</html>
